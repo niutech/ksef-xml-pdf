@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wizualizator e-Faktur KSeF z XML do PDF</title>
-    <meta name="description" content="Wygeneruj wizualizację e-faktury z KSeF z pliku XML do pliku PDF">
+    <meta name="description" content="Wygeneruj wizualizację e-faktury KSeF z pliku XML do pliku PDF/A-3 z załączonym XML">
     <meta property="og:image" content="https://ai-gov.pl/ksef-pdf/ksef.png">
     <link rel="icon" href="favicon.ico">
     <style>
@@ -29,7 +29,7 @@
             background: #fff;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 600px;
+            max-width: 630px;
             width: 100%;
             padding: 40px;
         }
@@ -208,7 +208,7 @@
 <body>
     <div class="container">
         <h1>Wizualizator e-Faktur KS<span style="color: #E20E17;">e</span>F z&nbsp;XML do&nbsp;PDF</h1>
-        <p class="subtitle">Wygeneruj wizualizację e-faktury z KSeF z pliku XML do pliku PDF</p>
+        <p class="subtitle">Wygeneruj wizualizację e-faktury KSeF z pliku XML do pliku PDF/A-3 z&nbsp;załączonym XML</p>
 
         <div class="drop-zone" id="dropZone">
             <div class="drop-zone-icon">📤</div>
@@ -319,7 +319,9 @@
             generateBtn.disabled = true;
             showStatus('loading', '<span class="spinner"></span>Generowanie PDF...');
             try {
-                const nrKSeF = selectedFile.name.replace('.xml', '');
+				const selectedFileName = selectedFile.name.replace('.xml', '');
+                const nrKSeFMatch = selectedFileName.match(/\d{10}-\d{8}-[A-Za-z0-9]{12}-[A-Za-z0-9]{2}/);
+                const nrKSeF = nrKSeFMatch && nrKSeFMatch[0] || '-';
                 const xmlText = await selectedFile.text();
                 const qrCode = await generateQRCodeLink(xmlText, selectedFile);
                 const additionalData = {
@@ -330,7 +332,7 @@
                 const url = URL.createObjectURL(pdfBlob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `${nrKSeF}.pdf`;
+                a.download = `${selectedFileName}.pdf`;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
